@@ -2,226 +2,129 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>🤖 Pro AI Face Swap</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Magic Swap AI — Professional Face Swap</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
 
 <style>
-/* --- Reset & Fonts --- */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: 'Orbitron', sans-serif;
-}
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+/* === Base + Font === */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+* { margin:0; padding:0; box-sizing:border-box; font-family:'Poppins',sans-serif; }
 
 body {
-    background: radial-gradient(circle at top left,#0f0c29,#302b63,#24243e);
-    color: #fff;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    padding: 20px;
+  background: #0A0F24;
+  color: #fff;
+  min-height:100vh;
+  display:flex; justify-content:center; align-items:flex-start;
+  padding:2rem;
 }
 
-/* --- Container --- */
-.container {
-    max-width: 1000px;
-    width: 100%;
-    background: rgba(0,0,0,0.6);
-    border-radius: 25px;
-    padding: 30px;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 0 40px #00fff7, 0 0 80px #ff00f7 inset;
+/* === Container === */
+.main-container {
+  width:100%; max-width:1100px;
 }
 
-/* --- Header --- */
-h1 {
-    text-align: center;
-    font-size: 2.5em;
-    background: linear-gradient(90deg,#00fff7,#ff00f7,#00ff92);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin-bottom: 25px;
+/* === Header === */
+.header {
+  text-align:center;
+  margin-bottom:2rem;
+}
+.header h1 {
+  font-size:3rem; font-weight:700;
+  background:linear-gradient(90deg,#00F5A0,#6A5AFF,#FF2D95);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.header p {
+  margin-top:0.5rem; font-size:1.1rem; opacity:0.8;
 }
 
-/* --- Upload Grid --- */
-.uploads {
-    display: grid;
-    grid-template-columns: repeat(auto-fit,minmax(300px,1fr));
-    gap: 25px;
+/* === Upload Section === */
+.upload-section {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:1.5rem;
+  margin-bottom:2rem;
+}
+.upload-card {
+  background:#11172E;
+  border:1px solid #27334D;
+  border-radius:1rem;
+  padding:1.5rem;
+  text-align:center;
+  transition:0.3s;
+}
+.upload-card:hover {
+  border:1px solid #6A5AFF;
+  box-shadow:0 0 15px #6A5AFF50;
+}
+.upload-card h3 { font-size:1.2rem; font-weight:600; margin-bottom:0.8rem; }
+.upload-card input {
+  width:100%; padding:0.8rem; border-radius:0.8rem;
+  border:1px solid #3A4A6B; background:#0F1731; color:#fff;
+}
+.upload-card img {
+  width:100%; border-radius:0.8rem; margin-top:1rem;
+  border:2px solid #27334D;
 }
 
-.box {
-    background: rgba(255,255,255,0.05);
-    border: 2px solid #00fff7;
-    border-radius: 20px;
-    text-align: center;
-    padding: 20px;
-    transition: 0.3s;
+/* === Action Button === */
+.action-btn {
+  display:block;
+  margin:1rem auto 2rem;
+  padding:1rem 2.5rem;
+  font-size:1.2rem; font-weight:700;
+  background:linear-gradient(90deg,#00F5A0,#6A5AFF,#FF2D95);
+  background-size:200%;
+  border:none; border-radius:50px;
+  cursor:pointer; color:#000;
+  transition:0.4s;
 }
-.box:hover {
-    border-color: #ff00f7;
-    box-shadow: 0 0 20px #ff00f7;
-}
-
-/* --- File Inputs --- */
-input[type="file"] {
-    display: block;
-    width: 100%;
-    padding: 10px;
-    border-radius: 15px;
-    border: 1px solid #00fff7;
-    background: rgba(0,0,0,0.2);
-    color: #fff;
-    margin-top: 10px;
-    cursor: pointer;
-    transition: 0.3s;
-}
-input[type="file"]:hover {
-    border-color: #ff00f7;
+.action-btn:hover {
+  background-position:100% 0;
+  transform:scale(1.05);
 }
 
-/* --- Images --- */
-img {
-    max-width: 100%;
-    border-radius: 15px;
-    margin-top: 15px;
-    border: 2px solid #00fff7;
+/* === Canvas === */
+.result-canvas {
+  width:100%; border-radius:1rem;
+  border:2px solid #6A5AFF;
+  box-shadow:0 0 25px #6A5AFF40;
 }
 
-/* --- Button --- */
-button {
-    display: block;
-    margin: 30px auto 10px;
-    padding: 18px 50px;
-    font-size: 18px;
-    font-weight: bold;
-    border: none;
-    border-radius: 40px;
-    cursor: pointer;
-    background: linear-gradient(90deg,#00fff7,#ff00f7,#ffef00);
-    background-size: 200%;
-    animation: gradientMove 3s linear infinite;
-    color: #000;
-    box-shadow: 0 0 20px #00fff7, 0 0 40px #ff00f7 inset;
-    transition: 0.3s;
-}
-button:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 30px #ff00f7, 0 0 50px #00fff7 inset;
-}
-@keyframes gradientMove {
-    0%{background-position:0% 50%;}
-    50%{background-position:100% 50%;}
-    100%{background-position:0% 50%;}
-}
-
-/* --- Canvas Result --- */
-canvas {
-    width: 100%;
-    border-radius: 20px;
-    margin-top: 25px;
-    border: 2px solid #ff00f7;
-    box-shadow: 0 0 30px #ff00f7, 0 0 50px #00fff7 inset;
-}
-
-/* --- Footer --- */
+/* === Footer === */
 .footer {
-    text-align: center;
-    margin-top: 20px;
-    font-size: 14px;
-    opacity: 0.7;
+  text-align:center;
+  margin-top:2rem; opacity:0.7;
+  font-size:0.9rem;
 }
 </style>
 </head>
 
 <body>
-<div class="container">
-    <h1>🤖 Pro AI Face Swap</h1>
+<div class="main-container">
+  <!-- Header -->
+  <div class="header">
+    <h1>Magic Swap AI</h1>
+    <p>AI‑powered Face Swap — Professional UI, Browser‑Only, No Backend</p>
+  </div>
 
-    <div class="uploads">
-        <div class="box">
-            <h3>Source Face</h3>
-            <input type="file" id="sourceInput" accept="image/*" title="Select a source face image">
-            <img id="sourceImg" src="https://i.ibb.co/N2ZQ3Z1/source-sample.jpg">
-        </div>
-
-        <div class="box">
-            <h3>Target Image</h3>
-            <input type="file" id="targetInput" accept="image/*" title="Select a target image">
-            <img id="targetImg" src="https://i.ibb.co/fD0Zc4C/target-sample.jpg">
-        </div>
+  <!-- Upload Inputs -->
+  <div class="upload-section">
+    <div class="upload-card">
+      <h3>Source Face Image</h3>
+      <input type="file" id="srcInput" accept="image/*">
+      <img id="srcPreview" src="https://i.ibb.co/N2ZQ3Z1/source-sample.jpg">
     </div>
 
-    <button onclick="swapFaces()">⚡ Swap Face</button>
-
-    <canvas id="resultCanvas"></canvas>
-
-    <div class="footer">
-        Frontend AI Face Swap · Fully Browser-Based · Professional Demo
+    <div class="upload-card">
+      <h3>Target Image</h3>
+      <input type="file" id="tgtInput" accept="image/*">
+      <img id="tgtPreview" src="https://i.ibb.co/fD0Zc4C/target-sample.jpg">
     </div>
-</div>
+  </div>
 
-<script>
-const sourceImg = document.getElementById("sourceImg");
-const targetImg = document.getElementById("targetImg");
-const canvas = document.getElementById("resultCanvas");
-const ctx = canvas.getContext("2d");
+  <!-- Swap Button -->
+  <button class="action-btn" onclick="doFaceSwap()">✨ Swap Faces</button>
 
-document.getElementById("sourceInput").onchange = e =>
-    sourceImg.src = URL.createObjectURL(e.target.files[0]);
-
-document.getElementById("targetInput").onchange = e =>
-    targetImg.src = URL.createObjectURL(e.target.files[0]);
-
-async function loadModels() {
-    const MODEL_URL = "https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/weights";
-    await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
-}
-loadModels();
-
-async function swapFaces() {
-    if (!sourceImg.src || !targetImg.src) {
-        alert("Upload both images");
-        return;
-    }
-
-    const sourceDetection = await faceapi.detectSingleFace(
-        sourceImg,
-        new faceapi.TinyFaceDetectorOptions()
-    );
-
-    const targetDetection = await faceapi.detectSingleFace(
-        targetImg,
-        new faceapi.TinyFaceDetectorOptions()
-    );
-
-    if (!sourceDetection || !targetDetection) {
-        alert("Face not detected in one of the images");
-        return;
-    }
-
-    canvas.width = targetImg.naturalWidth;
-    canvas.height = targetImg.naturalHeight;
-
-    ctx.drawImage(targetImg, 0, 0);
-
-    const sBox = sourceDetection.box;
-    const tBox = targetDetection.box;
-
-    // Optional: simple smooth blending
-    ctx.save();
-    ctx.globalAlpha = 0.95;
-    ctx.drawImage(
-        sourceImg,
-        sBox.x, sBox.y, sBox.width, sBox.height,
-        tBox.x, tBox.y, tBox.width, tBox.height
-    );
-    ctx.restore();
-}
-</script>
-</body>
-</html>
+  <!-- Output Canvas -->
+  <canvas id="swapCanvas" class="result
