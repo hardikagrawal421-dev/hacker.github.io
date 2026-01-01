@@ -2,117 +2,166 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>AI Face Swap (Frontend Only)</title>
+<title>🤖 Pro AI Face Swap</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<!-- Face API -->
 <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
 
 <style>
+/* --- Reset & Fonts --- */
 * {
     box-sizing: border-box;
-    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    padding: 0;
+    font-family: 'Orbitron', sans-serif;
 }
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
 
 body {
-    margin: 0;
-    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-    color: white;
-    min-height: 100vh;
+    background: radial-gradient(circle at top left,#0f0c29,#302b63,#24243e);
+    color: #fff;
     display: flex;
     justify-content: center;
     align-items: center;
-}
-
-.container {
-    width: 95%;
-    max-width: 900px;
-    background: rgba(255,255,255,0.08);
-    border-radius: 20px;
+    min-height: 100vh;
     padding: 20px;
-    backdrop-filter: blur(10px);
 }
 
+/* --- Container --- */
+.container {
+    max-width: 1000px;
+    width: 100%;
+    background: rgba(0,0,0,0.6);
+    border-radius: 25px;
+    padding: 30px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 40px #00fff7, 0 0 80px #ff00f7 inset;
+}
+
+/* --- Header --- */
 h1 {
     text-align: center;
-    margin-bottom: 20px;
+    font-size: 2.5em;
+    background: linear-gradient(90deg,#00fff7,#ff00f7,#00ff92);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 25px;
 }
 
+/* --- Upload Grid --- */
 .uploads {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px,1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit,minmax(300px,1fr));
+    gap: 25px;
 }
 
 .box {
-    background: rgba(255,255,255,0.1);
-    padding: 15px;
-    border-radius: 15px;
+    background: rgba(255,255,255,0.05);
+    border: 2px solid #00fff7;
+    border-radius: 20px;
     text-align: center;
+    padding: 20px;
+    transition: 0.3s;
+}
+.box:hover {
+    border-color: #ff00f7;
+    box-shadow: 0 0 20px #ff00f7;
 }
 
-input {
+/* --- File Inputs --- */
+input[type="file"] {
+    display: block;
     width: 100%;
+    padding: 10px;
+    border-radius: 15px;
+    border: 1px solid #00fff7;
+    background: rgba(0,0,0,0.2);
+    color: #fff;
     margin-top: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+input[type="file"]:hover {
+    border-color: #ff00f7;
 }
 
+/* --- Images --- */
 img {
     max-width: 100%;
-    border-radius: 10px;
-    margin-top: 10px;
+    border-radius: 15px;
+    margin-top: 15px;
+    border: 2px solid #00fff7;
 }
 
+/* --- Button --- */
 button {
-    margin: 20px auto;
     display: block;
-    padding: 15px 40px;
+    margin: 30px auto 10px;
+    padding: 18px 50px;
+    font-size: 18px;
+    font-weight: bold;
     border: none;
-    border-radius: 30px;
-    font-size: 16px;
+    border-radius: 40px;
     cursor: pointer;
-    background: linear-gradient(45deg,#00f260,#0575e6);
-    color: white;
+    background: linear-gradient(90deg,#00fff7,#ff00f7,#ffef00);
+    background-size: 200%;
+    animation: gradientMove 3s linear infinite;
+    color: #000;
+    box-shadow: 0 0 20px #00fff7, 0 0 40px #ff00f7 inset;
+    transition: 0.3s;
+}
+button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 30px #ff00f7, 0 0 50px #00fff7 inset;
+}
+@keyframes gradientMove {
+    0%{background-position:0% 50%;}
+    50%{background-position:100% 50%;}
+    100%{background-position:0% 50%;}
 }
 
+/* --- Canvas Result --- */
 canvas {
     width: 100%;
-    border-radius: 15px;
-    margin-top: 20px;
+    border-radius: 20px;
+    margin-top: 25px;
+    border: 2px solid #ff00f7;
+    box-shadow: 0 0 30px #ff00f7, 0 0 50px #00fff7 inset;
 }
 
+/* --- Footer --- */
 .footer {
     text-align: center;
-    opacity: 0.7;
+    margin-top: 20px;
     font-size: 14px;
-    margin-top: 15px;
+    opacity: 0.7;
 }
 </style>
 </head>
 
 <body>
 <div class="container">
-    <h1>🧠 AI Face Swap (Browser-Only)</h1>
+    <h1>🤖 Pro AI Face Swap</h1>
 
     <div class="uploads">
         <div class="box">
             <h3>Source Face</h3>
-            <input type="file" id="sourceInput" accept="image/*">
-            <img id="sourceImg">
+            <input type="file" id="sourceInput" accept="image/*" title="Select a source face image">
+            <img id="sourceImg" src="https://i.ibb.co/N2ZQ3Z1/source-sample.jpg">
         </div>
 
         <div class="box">
             <h3>Target Image</h3>
-            <input type="file" id="targetInput" accept="image/*">
-            <img id="targetImg">
+            <input type="file" id="targetInput" accept="image/*" title="Select a target image">
+            <img id="targetImg" src="https://i.ibb.co/fD0Zc4C/target-sample.jpg">
         </div>
     </div>
 
-    <button onclick="swapFaces()">Swap Face</button>
+    <button onclick="swapFaces()">⚡ Swap Face</button>
 
     <canvas id="resultCanvas"></canvas>
 
     <div class="footer">
-        Frontend AI · No Server · Educational Demo
+        Frontend AI Face Swap · Fully Browser-Based · Professional Demo
     </div>
 </div>
 
@@ -163,11 +212,15 @@ async function swapFaces() {
     const sBox = sourceDetection.box;
     const tBox = targetDetection.box;
 
+    // Optional: simple smooth blending
+    ctx.save();
+    ctx.globalAlpha = 0.95;
     ctx.drawImage(
         sourceImg,
         sBox.x, sBox.y, sBox.width, sBox.height,
         tBox.x, tBox.y, tBox.width, tBox.height
     );
+    ctx.restore();
 }
 </script>
 </body>
