@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AI Face Swap (Frontend Only)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Face API -->
+<script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+
+<style>
+* {
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+    margin: 0;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    color: white;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    width: 95%;
+    max-width: 900px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 20px;
+    padding: 20px;
+    backdrop-filter: blur(10px);
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.uploads {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px,1fr));
+    gap: 20px;
+}
+
+.box {
+    background: rgba(255,255,255,0.1);
+    padding: 15px;
+    border-radius: 15px;
+    text-align: center;
+}
+
+input {
+    width: 100%;
+    margin-top: 10px;
+}
+
+img {
+    max-width: 100%;
+    border-radius: 10px;
+    margin-top: 10px;
+}
+
+button {
+    margin: 20px auto;
+    display: block;
+    padding: 15px 40px;
+    border: none;
+    border-radius: 30px;
+    font-size: 16px;
+    cursor: pointer;
+    background: linear-gradient(45deg,#00f260,#0575e6);
+    color: white;
+}
+
+canvas {
+    width: 100%;
+    border-radius: 15px;
+    margin-top: 20px;
+}
+
+.footer {
+    text-align: center;
+    opacity: 0.7;
+    font-size: 14px;
+    margin-top: 15px;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+    <h1>🧠 AI Face Swap (Browser-Only)</h1>
+
+    <div class="uploads">
+        <div class="box">
+            <h3>Source Face</h3>
+            <input type="file" id="sourceInput" accept="image/*">
+            <img id="sourceImg">
+        </div>
+
+        <div class="box">
+            <h3>Target Image</h3>
+            <input type="file" id="targetInput" accept="image/*">
+            <img id="targetImg">
+        </div>
+    </div>
+
+    <button onclick="swapFaces()">Swap Face</button>
+
+    <canvas id="resultCanvas"></canvas>
+
+    <div class="footer">
+        Frontend AI · No Server · Educational Demo
+    </div>
+</div>
+
+<script>
+const sourceImg = document.getElementById("sourceImg");
+const targetImg = document.getElementById("targetImg");
+const canvas = document.getElementById("resultCanvas");
+const ctx = canvas.getContext("2d");
+
+document.getElementById("sourceInput").onchange = e =>
+    sourceImg.src = URL.createObjectURL(e.target.files[0]);
+
+document.getElementById("targetInput").onchange = e =>
+    targetImg.src = URL.createObjectURL(e.target.files[0]);
+
+async function loadModels() {
+    const MODEL_URL = "https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/weights";
+    await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
+}
+loadModels();
+
+async function swapFaces() {
+    if (!sourceImg.src || !targetImg.src) {
+        alert("Upload both images");
+        return;
+    }
+
+    const sourceDetection = await faceapi.detectSingleFace(
+        sourceImg,
+        new faceapi.TinyFaceDetectorOptions()
+    );
+
+    const targetDetection = await faceapi.detectSingleFace(
+        targetImg,
+        new faceapi.TinyFaceDetectorOptions()
+    );
+
+    if (!sourceDetection || !targetDetection) {
+        alert("Face not detected in one of the images");
+        return;
+    }
+
+    canvas.width = targetImg.naturalWidth;
+    canvas.height = targetImg.naturalHeight;
+
+    ctx.drawImage(targetImg, 0, 0);
+
+    const sBox = sourceDetection.box;
+    const tBox = targetDetection.box;
+
+    ctx.drawImage(
+        sourceImg,
+        sBox.x, sBox.y, sBox.width, sBox.height,
+        tBox.x, tBox.y, tBox.width, tBox.height
+    );
+}
+</script>
+</body>
+</html>
